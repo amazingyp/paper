@@ -150,10 +150,12 @@ get方法用于上层服务从存储模块下载数据，这个方法的执行�
 delete方法需要上层服务提供fileHandle，和get方法一样，需要先得到fileHandle再调用MasterClient的getStripe方法获取文件所在条带的块信息和磁盘信息。接下来msf会根据得到的块信息调用StorageClient的delete方法将条带内的块数据进行删除。最后调用MasterClient的updateStripes方法来告知master条带的变动情况。
 
 \section{功能模块实现}%5.4
-在上一节中介绍了文件存储模块的具体实现方案，这一小节来介绍功能模块的实现方案。
+在上一节中介绍了对象数据存储模块的具体实现方案，这一小节来介绍功能模块的实现方案。
 
 \subsection{用户数据管理模块实现}
 用户数据管理模块向用户提供管理用户数据的功能，具体包括创建用户、修改用户信息和查看用户信息这三个功能。这个模块的类图如图5.10所示。
+
+UserController是用户数据管理模块的入口，负责接收用户的请求。UserService负责处理具体的功能逻辑。UserMapper是和元数据数据库交互的接口，UserMapper和MongoDB建立连接，保存用户数据或查找用户数据。AuditService是来管理鉴权信息的类，在用户鉴权通过后，可以通过getUserId方法来获取当前用户的uid，以进行下一步的操作。
 
 \begin{figure}
   \centering
@@ -161,7 +163,7 @@ delete方法需要上层服务提供fileHandle，和get方法一样，需要先�
   \caption{用户数据管理模块类图}
 \end{figure}
 
-UserController是用户数据管理模块的入口，负责接收用户的请求。UserService负责处理具体的功能逻辑。UserMapper是和元数据数据库交互的接口，UserMapper和MongoDB建立连接，保存用户数据或查找用户数据。AuditService是来管理鉴权信息的类，在用户鉴权通过后，可以通过getUserId方法来获取当前用户的uid，以进行下一步的操作。
+创建用户的时序图如图5.11所示。创建用户流程始于客户端通过UserController发起的创建用户请求，该请求携带了用户的基本信息，UserController会将请求转发给UserService，UserService在收到请求后会先调用UserMapper中的getUserByName方法来验证是否出现了重名的情况，如果有的话则直接返回错误的结果，反之则调用UserMapper中的insertUser方法将用户数据保存至元数据数据库中，实现信息的持久化。
 
 \begin{figure}
   \centering
@@ -169,7 +171,7 @@ UserController是用户数据管理模块的入口，负责接收用户的请求
   \caption{创建用户时序图}
 \end{figure}
 
-创建用户的时序图如图5.11所示。创建用户流程始于客户端通过UserController发起的创建用户请求，该请求携带了用户的基本信息，UserController会将请求转发给UserService，UserService在收到请求后会先调用UserMapper中的getUserByName方法来验证是否出现了重名的情况，如果有的话则直接返回错误的结果，反之则调用UserMapper中的insertUser方法将用户数据保存至元数据数据库中，实现信息的持久化。
+修改用户信息的时序图如图5.12所示。UserController接收到用户的修改信息的请求后，会调用updateUser方法将信息传递给UserService，UserService会先调用AuditService中的getUserId方法来验证用户是否已经通过鉴权，如果没有则直接返回错误，反之则会调用UserMapper中的updateUser方法，在元数据数据库中修改这位用户的信息。
 
 \begin{figure}
   \centering
@@ -177,22 +179,21 @@ UserController是用户数据管理模块的入口，负责接收用户的请求
   \caption{修改用户信息时序图}
 \end{figure}
 
-修改用户信息的时序图如图5.12所示。UserController接收到用户的修改信息的请求后，会调用updateUser方法将信息传递给UserService，UserService会先调用AuditService中的getUserId方法来验证用户是否已经通过鉴权，如果没有则直接返回错误，反之则会调用UserMapper中的updateUser方法，在元数据数据库中修改这位用户的信息。
-
 查看用户的工作流程与图5.12中的流程类似，只需要将UserController中执行的方法变为getUser，同时在鉴权通过的情况下调用UserMapper中的getUserById方法来从元数据数据库中获取用户信息。
 
 \subsection{桶数据管理模块实现}
-桶数据管理模块向用户提供管理桶数据的功能，具体包括创建桶、删除桶、修改桶信息和查看桶信息这四个功能。这个模块的类图如图5.13所示。
-
-桶数据管理模块中的BucketController和BucketService用户数据管理模块的类图结构类似，是用来接收请求和实际执行业务操作的类。BucketService引入AuditService的原因是为了获取用户的uid，便于模块提供查看创建的全部桶的功能，BucketMapper中提供了getBucketByUid方法来支持这项功能。为了支持删除桶操作，BucketService引入了msf和FileinfoMapper来删除文件的元数据和实际数据。
-
-在介绍操作的具体实现之前，首先需要介绍BucketService中的checkBucket方法，它的作用是来检查一个桶是否是由请求用户创建的，由于这个操作在多个方法中都需要使用，为了代码能够更好地进行复用，需要将这些操作整合为一个方法。这个操作的具体流程是，首先调用BucketMapper的getBucketById方法验证桶是否存在，然后调用AuditService的getUserId方法来获取用户的uid，通过判断uid和桶的uid属性是否相同来确定桶是否由请求用户创建。
 
 \begin{figure}
   \centering
   \includegraphics[width=1\textwidth]{桶数据管理类图.jpg}
   \caption{桶数据管理模块类图}
 \end{figure}
+
+桶数据管理模块向用户提供管理桶数据的功能，具体包括创建桶、删除桶、修改桶信息和查看桶信息这四个功能。这个模块的类图如图5.13所示。
+
+桶数据管理模块中的BucketController和BucketService用户数据管理模块的类图结构类似，是用来接收请求和实际执行业务操作的类。BucketService引入AuditService的原因是为了获取用户的uid，便于模块提供查看创建的全部桶的功能，BucketMapper中提供了getBucketByUid方法来支持这项功能。为了支持删除桶操作，BucketService引入了msf和FileinfoMapper来删除文件的元数据和实际数据。
+
+在介绍操作的具体实现之前，首先需要介绍BucketService中的checkBucket方法，它的作用是来检查一个桶是否是由请求用户创建的，由于这个操作在多个方法中都需要使用，为了代码能够更好地进行复用，需要将这些操作整合为一个方法。这个操作的具体流程是，首先调用BucketMapper的getBucketById方法验证桶是否存在，然后调用AuditService的getUserId方法来获取用户的uid，通过判断uid和桶的uid属性是否相同来确定桶是否由请求用户创建。
 
 创建桶的时序图如图5.14所示。BucketController在接收到请求后将请求转发给BucketService进行处理，BucketService首先会调用BucketMapper的getBucketByName方法来验证是否出现重名的桶，如果出现则直接返回错误，反之则会调用insertBucket方法将桶的相关信息保存到元数据数据库中并返回成功。
 
@@ -202,21 +203,21 @@ UserController是用户数据管理模块的入口，负责接收用户的请求
   \caption{创建桶时序图}
 \end{figure}
 
+删除桶的时序图如图5.15所示。BucketController在接收到请求后将请求转发给BucketService进行处理，BucketService首先会调用checkBucket方法来验证桶是否由自己创建且存在，验证成功后需要对桶内的数据进行删除，首先需要调用BucketMapper的deleteBucket方法将桶删除，然后会将桶内的文件删除，先调用FileinfoMapper的getFileinfosByBucketId方法来获取桶内所有的文件信息，然后依次调用FileinfoMapper的deleteFileinfoById和msf的delete方法将文件的元数据和实际数据进行删除。
+
 \begin{figure}
   \centering
   \includegraphics[width=0.9\textwidth]{桶删除时序图.png}
   \caption{删除桶时序图}
 \end{figure}
 
-删除桶的时序图如图5.15所示。BucketController在接收到请求后将请求转发给BucketService进行处理，BucketService首先会调用checkBucket方法来验证桶是否由自己创建且存在，验证成功后需要对桶内的数据进行删除，首先需要调用BucketMapper的deleteBucket方法将桶删除，然后会将桶内的文件删除，先调用FileinfoMapper的getFileinfosByBucketId方法来获取桶内所有的文件信息，然后依次调用FileinfoMapper的deleteFileinfoById和msf的delete方法将文件的元数据和实际数据进行删除。
+修改桶信息的时序图如图5.16所示。开始的流程和删除桶的操作类似，都是将请求转发然后验证桶是否由自己创建，然后BucketService会调用BucketMapper的getBucketByName方法来验证修改后桶是否会重名，如果不会重名则会调用BucketMapper的updateBucket方法来更新桶信息。
 
 \begin{figure}
   \centering
   \includegraphics[width=0.75\textwidth]{修改桶时序图.png}
   \caption{修改桶信息时序图}
 \end{figure}
-
-修改桶信息的时序图如图5.16所示。开始的流程和删除桶的操作类似，都是将请求转发然后验证桶是否由自己创建，然后BucketService会调用BucketMapper的getBucketByName方法来验证修改后桶是否会重名，如果不会重名则会调用BucketMapper的updateBucket方法来更新桶信息。
 
 查看桶数据的实现较为简单，在调用checkBucket方法验证通过后只需调用BucketMapper的getBucketById方法来获取桶信息。如果需要查看创建的全部桶信息，则需要先调用AuditService的getUserId方法来获取用户的uid，然后调用BucketMapper的getBucketsByUid方法来获取所需的信息。
 
@@ -230,15 +231,13 @@ UserController是用户数据管理模块的入口，负责接收用户的请求
 
 文件管理模块向用户提供管理文件的功能，具体包括重命名文件、移动文件和查看文件信息这三个功能。这个模块的类图如图5.17所示。文件管理模块中值得介绍的是FileinfoService的checkFileinfo方法，它和BucketService的checkBucket方法类似，都是用来检测合法性的，在这里checkFileinfo用来检测文件是否存在且由自己创建，执行方法是先调用getFileinfoById方法检查文件是否存在，然后再判断文件中的uid属性和当前用户的uid是否相同，当前用户的uid可通过AuditService的getUserId方法获取。
 
-查看文件信息操作较为简单，在验证完文件的合法性后，只需用getFileinfoById将文件信息从元数据数据库中获取并返回即可。如果需要查看桶内的全部文件，则需要用checkBucket检测桶的合法性，然后调用getFileinfosByBucketId将数据返回即可。
-
-重命名文件操作完整工作情况时的时序图如图5.18所示。FileinfoController将请求分发给后，FileinfoService会先调用checkFileinfo方法检测文件是否存在且由自己创建，如果检测通过则会用FileinfoMapper的getFileinfoInBucket方法来验证是否会出现重名的情况，如果不出现的话会调用updateFileinfo将文件进行重命名。
-
 \begin{figure}
   \centering
   \includegraphics[width=0.8\textwidth]{重命名文件时序图.png}
   \caption{重命名文件时序图}
 \end{figure}
+
+重命名文件操作完整工作情况时的时序图如图5.18所示。FileinfoController将请求分发给后，FileinfoService会先调用checkFileinfo方法检测文件是否存在且由自己创建，如果检测通过则会用FileinfoMapper的getFileinfoInBucket方法来验证是否会出现重名的情况，如果不出现的话会调用updateFileinfo将文件进行重命名。
 
 移动文件操作完整工作情况时的时序图如图5.19所示。和重命名文件一样，模块会先检测文件是否存在且由自己创建，如果检测通过还需要用checkBucket检测目标桶是否存在且由自己创建，如果检测通过，需要进一步用FileinfoMapper的getFileinfoInBucket方法检查移动会是否出现重名文件，如果不会出现则调用updateFileinfo将文件移动至目标桶中，然后利用updateBucket方法修改桶的信息。需要注意的是，移动文件只是在逻辑上将文件所属的桶进行了移动，文件实际数据不需要进行移动。
 
@@ -248,16 +247,18 @@ UserController是用户数据管理模块的入口，负责接收用户的请求
   \caption{移动文件时序图}
 \end{figure}
 
+查看文件信息操作较为简单，在验证完文件的合法性后，只需用getFileinfoById将文件信息从元数据数据库中获取并返回即可。如果需要查看桶内的全部文件，则需要用checkBucket检测桶的合法性，然后调用getFileinfosByBucketId将数据返回即可。
+
 \subsection{文件交互模块实现}
 文件交互模块向用户提供文件上传、文件下载和文件删除这三个功能。这个模块的类图如图5.20所示。
+
+文件交互模块中的FileController负责接收请求，接收请求后转交给FileService，FileService通过调用msf来和对象数据存储模块进行交互，msf是对象存储模块对外暴露的接口，向功能模块提供了三个方法来帮助功能模块完成文件的交互，FileinfoMapper和BucketMapper用来处理文件的元数据。\newline
 
 \begin{figure}
   \centering
   \includegraphics[width=1\textwidth]{文件交互类图.jpg}
   \caption{文件交互模块类图}
 \end{figure}
-
-文件交互模块中的msf是负责处理文件实际数据的，FileService通过调用msf来向对象数据存储模块进行文件数据的交互，FileinfoMapper和BucketMapper用来处理文件的元数据。
 
 文件上传的时序图如图5.21所示，FileService接收到请求后首先会调用getBucketById方法来获取桶的信息，然后检查用户是否有向这个桶上传文件的权限，如果没有上传的权限则会直接返回错误，如果有则调用msf的put方法将文件上传，得到这个文件的FileHandle后利用FileinfoMapper的insertFileinfo方法将文件的元数据写入元数据数据库中，最后还需要调用updateBucket来更新桶的相关信息。
 
