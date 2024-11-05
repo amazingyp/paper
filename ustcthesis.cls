@@ -1902,7 +1902,7 @@
           \textsf{导师姓名：} & \ustc@supervisor@names \\
         \else
           \textsf{校内导师：} & \ustc@supervisor@names \\
-          \textsf{企业导师：} & \ustc@advisor@names \\
+          \textsf{实践导师：} & \ustc@advisor@names \\
         \fi
         \textsf{完成时间：} & \ustc@date@zh@big
       \end{tabular}\par}%

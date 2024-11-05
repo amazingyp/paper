@@ -11,7 +11,7 @@
   supervisor*        = {Lv Min},
   advisor            = {沈梦叶},
   advisor*           = {Shen Mengye},
-  date               = {2024-07-22},
+  date               = {2024-10-15},
   % date               = {2017-05-01},  % 默认为今日
   % professional-type  = {专业学位类型},
   % professional-type* = {Professional degree type},
@@ -50,6 +50,12 @@
 
 % SI 量和单位
 \usepackage{siunitx}
+
+% 颜色
+\usepackage{color}
+
+% 并排表格
+\usepackage{floatrow}
 
 % 参考文献使用 BibTeX + natbib 宏包
 % 顺序编码制
@@ -97,3 +103,7 @@
 
 % hyperref 宏包在最后调用
 \usepackage{hyperref}
+
+% 表格标题放在上方
+\floatsetup[table]{capposition=top}
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]

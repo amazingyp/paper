@@ -12,12 +12,14 @@
 
 \begin{table}[h]
     \centering
+    \vspace{10pt}
     \caption{服务器A参数表}
+    \vspace{-15pt}
     \begin{tabular}{cc}
       \toprule
       项目   & 配置参数   \\
       \midrule
-      网卡带宽  & 10Gb*2  \\
+      网卡带宽  & 10Gb *2  \\
       CPU核数   & 48C     \\
       Memory   & 64G      \\
       SATA     & 8T *23   \\
@@ -29,12 +31,14 @@
 
 \begin{table}[h]
     \centering
+    \vspace{10pt}
     \caption{服务器B参数表}
+    \vspace{-15pt}
     \begin{tabular}{cc}
       \toprule
       项目   & 配置参数   \\
       \midrule
-      网卡带宽  & 10Gb*2  \\
+      网卡带宽  & 10Gb *2  \\
       CPU核数   & 48C     \\
       Memory   & 64G      \\
       SATA     & 500G   \\
@@ -54,7 +58,9 @@
 
 \begin{table}[h]
   \centering
+  \vspace{10pt}
   \caption{用户数据操作用例表}
+  \vspace{-15pt}
   \begin{tabular}{cccc}
     \toprule
     用例编号 & 模拟的操作   & 预期结果   & 实际结果 \\
@@ -75,7 +81,9 @@
 
 \begin{table}[h]
   \centering
+  \vspace{10pt}
   \caption{桶数据操作用例表}
+  \vspace{-15pt}
   \begin{tabular}{cccc}
     \toprule
     用例编号 & 模拟的操作   & 预期结果  & 实际结果 \\
@@ -99,7 +107,9 @@
 
 \begin{table}[h]
   \centering
+  \vspace{10pt}
   \caption{文件管理操作用例表}
+  \vspace{-15pt}
   \begin{tabular}{cccc}
     \toprule
     用例编号 & 模拟的操作   & 预期结果  & 实际结果 \\
@@ -122,7 +132,9 @@
 
 \begin{table}[h]
   \centering
+  \vspace{10pt}
   \caption{文件交互操作用例表}
+  \vspace{-15pt}
   \begin{tabular}{cccc}
     \toprule
     用例编号 & 模拟的操作   & 预期结果 & 实际结果  \\
@@ -153,7 +165,9 @@
 
 \begin{table}[h]
     \centering
+    \vspace{10pt}
     \caption{多位置测试结果表}
+    \vspace{-15pt}
     \begin{tabular}{cc}
       \toprule
       系统部署位置   & 速度（MB/s）   \\
@@ -175,7 +189,9 @@
 
 \begin{table}[h]
   \centering
+  \vspace{10pt}
   \caption{安全性测试结果表}
+  \vspace{-15pt}
   \begin{tabular}{cccc}
     \toprule
     用例编号 & 模拟的操作   & 预期结果 & 实际结果  \\
@@ -217,7 +233,9 @@
 
 \begin{table}[h]
     \centering
-    \caption{测试计划表}
+    \vspace{10pt}
+    \caption{测试计划与结果表}
+    \vspace{-15pt}
     \begin{tabular}{ccc}
       \toprule
       环境状况   & 时间   & 接口是否出现异常 \\
@@ -230,7 +248,7 @@
     \end{tabular}
 \end{table}
 
-在测试计划中，阐述了系统在进行测试时会引入服务重启和磁盘故障，我们可以通过观察接口的响应时间和下载的数据是否出现错误来判断系统是否具有一定的可用性。经观察，系统不会因为某个服务的中断或单个磁盘的故障而出现接口异常，即没有出现超时或数据出错的现象，这意味着在测试时间内，系统没有出现不可用的情况，说明系统具有一定的可用性。
+在测试计划中，阐述了系统在进行测试时会引入服务重启和磁盘故障，我们可以通过观察接口的响应时间和下载的数据是否出现错误来判断系统是否具有一定的可用性。经观察，系统不会因为某个服务的中断或单个磁盘的故障而出现接口异常，即没有出现超时或数据出错的现象，这意味着在测试时间内，系统没有出现不可用的情况，说明系统具有较高的可用性。
 
 在测试计划中，阐述了系统在进行持续测试时会进行随机扩容的操作，经观察，系统不会因为扩容操作而影响业务操作，证明系统具有一定的可扩展性。
 
@@ -247,16 +265,18 @@
 \subsection{和MinIO对比}%6.3.2
 在第二章，我们详细介绍过MinIO这款分布式对象存储系统，它使用纠删组的形式组织文件，文件都以纠删码的形式存放在系统中。在第四章，我们分析过使用纠删码时小文件写入性能较差，因此相较于这种只使用纠删码的系统，我们系统的优势是在大量小文件存储场景下性能有优势。
 
-为了比较两者在大量小文件场景下的性能，我们搭建了以下的测试环境对性能进行测试。环境中共有16个节点，每个节点的配置如表6.10所示，每个节点中配置了4*1TB的磁盘，其中8个节点作服务端，8个节点作客户端。
+为了比较两者的性能，我们搭建了以下的测试环境对性能进行测试。环境中共有16个节点，每个节点的配置如表6.10所示，每个节点中配置了4块1TB的磁盘，其中8个节点作服务端，8个节点作客户端。\newline \newline
 
 \begin{table}[h]
     \centering
+    \vspace{10pt}
     \caption{节点参数表}
+    \vspace{-15pt}
     \begin{tabular}{cc}
       \toprule
       项目   & 配置参数   \\
       \midrule
-      网卡带宽 & 10Gb*2  \\
+      网卡带宽 & 10Gb *2  \\
       CPU核数  & 48C     \\
       Memory  & 64G      \\
       SSD     & 1T *4   \\
@@ -264,51 +284,101 @@
     \end{tabular}
 \end{table}
 
-首先测试MinIO的性能，客户端开启32线程测试1M大小的文件上传下载性能，持续时间30秒，得到结果如表6.11所示。
+首先测试小文件场景下的性能，客户端开启32线程，测试1M大小的文件上传下载性能，持续时间30秒，得到结果如表6.11和6.12所示。
 
-\begin{table}[h]
-    \centering
-    \caption{MinIO测试结果}
-    \begin{tabular}{ccc}
-      \toprule
-      客户机   & PUT吞吐量  & GET吞吐量 \\
-      \midrule
-      节点1  & 62.2MB/s  & 316.7MB/s \\
-      节点2  & 62.1MB/s  & 320.3MB/s \\
-      节点3  & 62.5MB/s  & 317.3MB/s \\
-      节点4  & 62.4MB/s  & 319.2MB/s \\
-      节点5  & 62MB/s    & 319.3MB/s \\
-      节点6  & 62.5MB/s  & 300.6MB/s \\
-      节点7  & 62.4MB/s  & 318.5MB/s \\
-      节点8  & 62.6MB/s  & 319.5MB/s \\
-      汇总   & 498.7MB/s & 2531.4MB/s \\
-      \bottomrule
-    \end{tabular}
-\end{table}
+\begin{table*}
+\begin{floatrow}
+\capbtabbox{
+\begin{tabular}{cccc}
+\toprule
+ 客户机 & PUT吞吐量 & GET吞吐量 \\
+\midrule
+节点1  & 62.2MB/s  & 316.7MB/s \\
+节点2  & 62.1MB/s  & 320.3MB/s \\
+节点3  & 62.5MB/s  & 317.3MB/s \\
+节点4  & 62.4MB/s  & 319.2MB/s \\
+节点5  & 62MB/s    & 319.3MB/s \\
+节点6  & 62.5MB/s  & 300.6MB/s \\
+节点7  & 62.4MB/s  & 318.5MB/s \\
+节点8  & 62.6MB/s  & 319.5MB/s \\
+汇总   & 498.7MB/s & 2531.4MB/s \\
+\bottomrule
+\end{tabular}
+}{
+ \caption{MinIO小文件测试结果}
+}
+\capbtabbox{
+\begin{tabular}{cccc}
+\toprule
+客户机 & PUT吞吐量 & GET吞吐量 \\
+\midrule
+节点1  & 85.8MB/s  & 320.8MB/s \\
+节点2  & 88.7MB/s  & 319.7MB/s \\
+节点3  & 79.9MB/s  & 328.5MB/s \\
+节点4  & 89.2MB/s  & 318.2MB/s \\
+节点5  & 90MB/s    & 327.7MB/s \\
+节点6  & 86.4MB/s  & 300.8MB/s \\
+节点7  & 79.4MB/s  & 327.6MB/s \\
+节点8  & 88.6MB/s  & 322.4MB/s \\
+汇总   & 688MB/s   & 2567.7MB/s \\
+\bottomrule
+\end{tabular}
+}{
+ \caption{本系统小文件测试结果}
+ \small
+}
+\end{floatrow}
+\end{table*}
 
-使用同样的测试参数，测试我们开发的系统，得到的结果如表6.12所示。
+将文件大小改为2G，其他参数保持不变，得到的结果如表6.13和6.14所示所示。
 
-\begin{table}[h]
-    \centering
-    \caption{本系统测试结果}
-    \begin{tabular}{ccc}
-      \toprule
-      客户机   & PUT吞吐量  & GET吞吐量 \\
-      \midrule
-      节点1  & 85.8MB/s  & 320.8MB/s \\
-      节点2  & 88.7MB/s  & 319.7MB/s \\
-      节点3  & 79.9MB/s  & 328.5MB/s \\
-      节点4  & 89.2MB/s  & 318.2MB/s \\
-      节点5  & 90MB/s    & 327.7MB/s \\
-      节点6  & 86.4MB/s  & 300.8MB/s \\
-      节点7  & 79.4MB/s  & 327.6MB/s \\
-      节点8  & 88.6MB/s  & 322.4MB/s \\
-      汇总   & 688MB/s   & 2567.7MB/s \\
-      \bottomrule
-    \end{tabular}
-\end{table}
+\begin{table*}
+  \begin{floatrow}
+  \capbtabbox{
+  \begin{tabular}{cccc}
+  \toprule
+   客户机 & PUT吞吐量 & GET吞吐量 \\
+  \midrule
+  节点1  & 152.5MB/s  & 396MB/s \\
+  节点2  & 178.6MB/s  & 567.4MB/s \\
+  节点3  & 153.2MB/s  & 417.3MB/s \\
+  节点4  & 148MB/s    & 425.7MB/s \\
+  节点5  & 148.4MB/s  & 421.6MB/s \\
+  节点6  & 145.6MB/s  & 450.1MB/s \\
+  节点7  & 149.5MB/s  & 463.8MB/s \\
+  节点8  & 283.3MB/s  & 789MB/s \\
+  汇总   & 1359.1MB/s  & 3930.9MB/s \\
+  \bottomrule
+  \end{tabular}
+  }{
+   \caption{MinIO大文件测试结果}
+   \label{Tab3}
+  }
+  \capbtabbox{
+  \begin{tabular}{cccc}
+  \toprule
+  客户机 & PUT吞吐量 & GET吞吐量 \\
+  \midrule
+  节点1  & 173.5MB/s  & 407.3MB/s \\
+  节点2  & 166.6MB/s  & 398.8MB/s \\
+  节点3  & 163.6MB/s  & 424.1MB/s \\
+  节点4  & 155.4MB/s  & 433.6MB/s \\
+  节点5  & 162.1MB/s  & 452.6MB/s \\
+  节点6  & 178.7MB/s  & 535.1MB/s \\
+  节点7  & 163.3MB/s  & 478.5MB/s \\
+  节点8  & 227.2MB/s  & 764.2MB/s \\
+  汇总   & 1390.5MB/s  & 3894.2MB/s \\
+  \bottomrule
+  \end{tabular}
+  }{
+   \caption{本系统大文件测试结果}
+   \label{Tab4}
+   \small
+  }
+  \end{floatrow}
+  \end{table*}
 
-从以上的测试结果来看，MinIO和本系统在小文件读取性能上大致相似，在小文件写入性能上本系统有一定优势。原因是测试过程不考虑故障读，所有读取都能够成功返回，无需使用纠删码进行数据的恢复，性能差距不大，而写入时本系统优先写入三副本系统，无需额外计算纠删码，而MinIO使用纠删码写入，需要计算出纠删码后再写入系统，同时MinIO需要将小文件进一步切分，在文件系统中写入时有一定的写放大的问题。
+从以上的测试结果来看，在小文件场景下，MinIO和本系统在小文件读取性能上大致相似，在小文件写入性能上本系统有一定优势。原因是测试过程不考虑故障读，所有读取都能够成功返回，无需使用纠删码进行数据的恢复，性能差距不大，而写入时本系统优先写入三副本系统，无需额外计算纠删码，而MinIO使用纠删码写入，需要计算出纠删码后再写入系统，同时MinIO需要将小文件进一步切分，在文件系统中写入时有一定的写放大的问题；在大文件场景下，MinIO和本系统读取和写入性能都大致相似，写入性能本系统有微弱优势，原因是大文件以纠删码形式写入时，损失的性能要比小文件要少。
 
 \subsection{和NOS对比}%6.3.3
 在第二章中，我们介绍了网易开发的NOS分布式对象存储系统，它使用多副本和纠删码结合的方法来保存文件，在文件从多副本转为纠删码时，NOS通过LifeCycle程序将文件转入EC池。相较于这类系统，我们系统的最大优势是在文件从多副本到纠删码转换时不需要额外的操作，文件的多副本形式和纠删码形式都是以条带保存在系统中，在保存形式发生改变时，不需要进行额外的存取，避免了文件的多次读写，减少了系统的读写开销。
